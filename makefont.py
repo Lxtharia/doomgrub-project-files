@@ -25,9 +25,23 @@ def sectionLen(bytes: bytes):
 
 
 metadata = {}
-chars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!`;:.%?-/"
-chars = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+# They actually need to be in codepoint order!!
+chars = " !%-./0123456789:;?ABCDEFGHIJKLMNOPQRSTUVWXYZ`abcdefghijklmnopqrstuvwxyz"
+char_file_names = {c: c for c in chars}
+for c in "abcdefghijklmnopqrstuvwxyz":
+    char_file_names[c] = "lower" + c.upper()
+char_file_names[' '] = "SPACE"
+char_file_names['!'] = "EXCL"
+char_file_names['`'] = "TICK"
+char_file_names[';'] = "SEMICOL"
+char_file_names[':'] = "COL"
+char_file_names['.'] = "DOT"
+char_file_names['%'] = "PERCENT"
+char_file_names['?'] = "QUES"
+char_file_names['-'] = "DASH"
+char_file_names['/'] = "SLASH"
 char_amount = len(chars)
+print(char_file_names)
 
 
 # size of the font, Ascent + Descent (here: 15 + 2)
@@ -54,7 +68,7 @@ maxh = 0
 for c in chars:
     print("Processing character: \'" + c + "\'")
     # load image
-    filename = c + ".png" if c != " " else "SPACE.png"
+    filename = char_file_names[c] + ".png"
     img: Image = Image.open("./characterPngs/" + filename)
     # grayscale mode
     img.convert("LA")
@@ -126,11 +140,13 @@ for gray in gray_list:
     name = b"DoomShade Regular %s %s\x00" % (f"shade{gray}".encode(encoding='utf-8'), str(font_size).encode(encoding='utf-8'))
     name_len = toByte(len(name), 4)
     # this has some hard coded section lengths (these ---v ), so you just gotta count
+
     header = b"FILE\x00\x00\x00\x04PFF2NAME%b%b" % (name_len, name) \
              + b"FAMI\x00\x00\x00\x0ADoomShade\x00WEIG\x00\x00\x00\x07normal\x00SLAN\x00\x00\x00\x07normal\x00" \
                b"PTSZ\x00\x00\x00\x02%bMAXW\x00\x00\x00\x02%bMAXH\x00\x00\x00\x02%bASCE\x00\x00\x00\x02%bDESC\x00\x00\x00\x02%bCHIX%b" \
              % (ptsz, maxw, maxh, asce, desc, toByte(chix_len, 4))
-    with open(f"./doomgrub_theme/DoomShade{gray}.pf2", "wb+") as font_file:
+
+    with open(f"./doomgrub-theme/DoomShade{gray}.pf2", "wb+") as font_file:
         font_file.write(header)
         data_start = len(header) + chix_len + 4 + 4
         data_offset = 0
