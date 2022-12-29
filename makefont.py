@@ -35,7 +35,7 @@ ascent = 15
 descent = 2
 font_size_px = ascent + descent
 # how many fonts we want, because 256 is too much lol, pst_range is how many shades of gray are in one posterization color
-graustufen = 16
+graustufen = 8
 pst_range = 256 // graustufen
 # all the font indices we wanna modify :)
 gray_list = [pst_range//2 + g * pst_range for g in range(graustufen)]
@@ -44,7 +44,7 @@ print(gray_list)
 fonts = [{c: bitarray(endian="big") for c in chars} for g in range(255)]
 
 # how big one pixel of the png should be in the font
-pxsize: int = 6
+pxsize: int = 5
 font_size = font_size_px * pxsize
 
 

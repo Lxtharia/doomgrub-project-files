@@ -14,43 +14,49 @@ terminal-font: "Unknown Regular 16"
 	width = 50%
 	
 	text = "Executing option in %d seconds"
-	font = "Unifont Regular 16"
+	font = "Unknown Regular 16"
 	color = "white"
 }
 
 """
 
-template = f"""
+template = """
 + boot_menu {{
 	left = 50%-600
-	top = 200
-	width = 1200
-	height = 800
+	top = 32%
+	width = 50%+600
+	height = 68%
 
-	item_font = "DoomShade Regular shade{0} {font_size}"
+	item_font = "DoomShade Regular shade{0} {2}"
 	item_color = "{0}, 0, 0"
 	selected_item_color = "{1}, 0, 0"
-	item_height = 108
+	item_height = {3}
 	item_padding = 0
-	item_spacing = 0
+	item_spacing = {4}
 	
-	icon_width = 120
-	icon_height = 120
-	item_icon_space = 72
+	icon_width = 0
+	item_icon_space = {5}
+	
+	selected_item_pixmap_style = "icon{2}_*.png"
 }}
 """
 
 darker = 40
 
-graustufen = 16
+graustufen = 8
 posterization_range = 256 // graustufen
 
-font_size = 102
+pxsize: int = 5
+font_size = 17*pxsize
+item_height = 19*pxsize
+item_spacing = item_height - 16 * pxsize
+item_icon_space = 12 * pxsize
 
 # inverse direction
 for i in range(graustufen)[::-1]:
     val = posterization_range//2 + i * posterization_range
-    theme += template.format(val, (val-darker) if val >= darker else 0, font_size)
+    val_selected = (val-darker) if val >= darker else 0
+    theme += template.format(val, val_selected, font_size, item_height, item_spacing, item_icon_space)
     pass
 
 print(theme)
